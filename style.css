@@ -1,0 +1,556 @@
+
+/* ==========================================================================
+   Password Generator  |  style.css
+   Written for the existing markup: no HTML changes or extra classes needed.
+   ========================================================================== */
+
+
+/* --------------------------------------------------------------------------
+   1. Design tokens
+   -------------------------------------------------------------------------- */
+:root {
+  --bg: #0B0F19;
+  --surface: #161B26;
+  --surface-raised: #1C2230;
+  --border: #2A3347;
+  --border-hover: #3B4763;
+
+  --text: #FFFFFF;
+  --text-muted: #9AA4B8;
+  --text-faint: #6B7690;
+
+  --accent: #5B6CFF;
+  --accent-hover: #7482FF;
+  --accent-active: #4756E6;
+  --accent-glow: rgba(91, 108, 255, 0.35);
+  --accent-soft: rgba(91, 108, 255, 0.14);
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", "SF Mono", SFMono-Regular,
+    ui-monospace, Menlo, Consolas, "Liberation Mono", monospace;
+
+  --radius-lg: 12px;
+  --radius-md: 8px;
+  --radius-pill: 999px;
+}
+
+
+/* --------------------------------------------------------------------------
+   2. Reset and base
+   -------------------------------------------------------------------------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  display: grid;
+  place-items: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0;
+  padding: 2rem 1rem;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(60rem 40rem at 50% -10%, rgba(91, 108, 255, 0.08), transparent 70%),
+    radial-gradient(40rem 30rem at 100% 100%, rgba(91, 108, 255, 0.05), transparent 70%);
+  background-attachment: fixed;
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1,
+p {
+  margin: 0;
+}
+
+/* The markup uses <br> for spacing; the grid layout handles that now. */
+br {
+  display: none;
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--text);
+}
+
+
+/* --------------------------------------------------------------------------
+   3. Global transition for interactive elements
+   -------------------------------------------------------------------------- */
+button,
+input,
+label,
+h1,
+#copy-btn,
+#copy-message {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+
+/* --------------------------------------------------------------------------
+   4. Container (the single <div> directly inside <body>)
+   -------------------------------------------------------------------------- */
+body > div {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: stretch;
+  gap: 1.5rem 0.75rem;
+  width: 100%;
+  max-width: 480px;
+  padding: 2.5rem;
+  background: rgba(22, 27, 38, 0.72);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.02) inset,
+    0 24px 48px -12px rgba(0, 0, 0, 0.6),
+    0 0 80px -20px var(--accent-glow);
+}
+
+/* Everything except the password row spans the full width */
+#copy-message,
+#range,
+#slider,
+body > div > div,
+#button {
+  grid-column: 1 / -1;
+}
+
+
+/* --------------------------------------------------------------------------
+   5. Password display (#new-password) and copy control (#copy-btn)
+   -------------------------------------------------------------------------- */
+#new-password {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  min-height: 3.75rem;
+  padding: 0.75rem 1.25rem;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 1.375rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+  cursor: text;
+}
+
+#new-password:hover {
+  border-color: var(--border-hover);
+}
+
+/* Placeholder shown before the first password is generated */
+#new-password:empty::before {
+  content: "Press generate";
+  color: var(--text-faint);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+#copy-btn {
+  display: grid;
+  place-items: center;
+  width: 3.75rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  font-size: 22px;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transform: scale(1);
+}
+
+#copy-btn:hover {
+  background: var(--surface-raised);
+  border-color: var(--border-hover);
+  color: var(--text);
+  transform: scale(1.04);
+}
+
+#copy-btn:active {
+  background: var(--border);
+  transform: scale(0.94);
+}
+
+#copy-btn:focus-visible {
+  outline: 2px solid var(--accent-hover);
+  outline-offset: 3px;
+}
+
+
+/* --------------------------------------------------------------------------
+   6. Feedback text (#copy-message)
+   Reserves its own line, so text appearing never shifts the layout.
+   Works with plain textContent: it fades in whenever it becomes non-empty.
+   -------------------------------------------------------------------------- */
+#copy-message {
+  height: 1.25rem;
+  margin-top: -0.75rem;
+  color: var(--accent-hover);
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  text-align: center;
+  pointer-events: none;
+}
+
+#copy-message:not(:empty) {
+  animation: feedback-in 0.3s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes feedback-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   7. Length slider (#range) and its value readout (#slider)
+   -------------------------------------------------------------------------- */
+#range {
+  /* Default fill matches value 10 on a 6 to 20 range. JS updates it live. */
+  --fill: 28.57%;
+  --track-h: 4px;
+  --thumb: 20px;
+
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  height: var(--thumb);
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  outline: none;
+}
+
+#range::-webkit-slider-runnable-track {
+  height: var(--track-h);
+  background: linear-gradient(
+    to right,
+    var(--accent) 0%,
+    var(--accent) var(--fill),
+    var(--border) var(--fill),
+    var(--border) 100%
+  );
+  border-radius: var(--radius-pill);
+  /* Only the height animates; the fill background must never lag the thumb */
+  transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Hover: the line thickens and the unfilled part brightens */
+#range:hover,
+#range:focus-visible {
+  --track-h: 6px;
+}
+
+#range:hover::-webkit-slider-runnable-track {
+  background: linear-gradient(
+    to right,
+    var(--accent-hover) 0%,
+    var(--accent-hover) var(--fill),
+    var(--border-hover) var(--fill),
+    var(--border-hover) 100%
+  );
+}
+
+#range:hover::-moz-range-track {
+  background: var(--border-hover);
+}
+
+#range:hover::-moz-range-progress {
+  background: var(--accent-hover);
+}
+
+#range::-moz-range-track {
+  height: var(--track-h);
+  background: var(--border);
+  border-radius: var(--radius-pill);
+}
+
+#range::-moz-range-progress {
+  height: var(--track-h);
+  background: var(--accent);
+  border-radius: var(--radius-pill);
+}
+
+#range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: var(--thumb);
+  height: var(--thumb);
+  margin-top: calc((var(--track-h) - var(--thumb)) / 2);
+  background: var(--text);
+  border: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px var(--surface), 0 2px 8px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#range::-moz-range-thumb {
+  width: var(--thumb);
+  height: var(--thumb);
+  background: var(--text);
+  border: 0;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px var(--surface), 0 2px 8px rgba(0, 0, 0, 0.5);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#range:hover::-webkit-slider-thumb {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 4px var(--surface), 0 0 16px var(--accent-glow);
+}
+
+#range:hover::-moz-range-thumb {
+  transform: scale(1.1);
+  box-shadow: 0 0 0 4px var(--surface), 0 0 16px var(--accent-glow);
+}
+
+#range:active::-webkit-slider-thumb {
+  transform: scale(0.95);
+  background: var(--accent-hover);
+}
+
+#range:active::-moz-range-thumb {
+  transform: scale(0.95);
+  background: var(--accent-hover);
+}
+
+#range:focus-visible::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px var(--surface), 0 0 0 6px var(--accent);
+}
+
+#range:focus-visible::-moz-range-thumb {
+  box-shadow: 0 0 0 4px var(--surface), 0 0 0 6px var(--accent);
+}
+
+#slider {
+  margin-top: -0.5rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+}
+
+
+/* --------------------------------------------------------------------------
+   8. Options: checkboxes styled as flat toggle switches
+   The inner <div> holds input + label pairs, laid out as switch | label.
+   -------------------------------------------------------------------------- */
+body > div > div {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0.25rem 0.875rem;
+}
+
+input[type="checkbox"] {
+  -webkit-appearance: none;
+  appearance: none;
+  position: relative;
+  flex-shrink: 0;
+  width: 34px;
+  height: 20px;
+  margin: 0;
+  background: var(--border);
+  border-radius: var(--radius-pill);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+input[type="checkbox"]::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 14px;
+  height: 14px;
+  background: var(--text-muted);
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+input[type="checkbox"]:hover {
+  background: var(--border-hover);
+}
+
+input[type="checkbox"]:checked {
+  background: var(--accent);
+}
+
+input[type="checkbox"]:checked::after {
+  background: var(--text);
+  transform: translateX(14px);
+}
+
+input[type="checkbox"]:active::after {
+  width: 18px;
+}
+
+input[type="checkbox"]:checked:active::after {
+  width: 18px;
+  transform: translateX(10px);
+}
+
+input[type="checkbox"]:focus-visible {
+  outline: 2px solid var(--accent-hover);
+  outline-offset: 3px;
+}
+
+input[type="checkbox"] + label {
+  padding-block: 0.5rem;
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+input[type="checkbox"] + label:hover {
+  color: var(--text);
+}
+
+input[type="checkbox"]:checked + label {
+  color: var(--text);
+}
+
+
+/* --------------------------------------------------------------------------
+   9. Generate button
+   -------------------------------------------------------------------------- */
+#button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 1.25rem;
+  background: var(--accent);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  box-shadow: 0 0 0 0 var(--accent-glow);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transform: scale(1);
+}
+
+#button:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 8px 24px -6px var(--accent-glow);
+  transform: scale(1.02);
+}
+
+#button:active {
+  background: var(--accent-active);
+  box-shadow: 0 2px 8px -2px var(--accent-glow);
+  transform: scale(0.97);
+}
+
+#button:focus-visible {
+  outline: 2px solid var(--accent-hover);
+  outline-offset: 3px;
+}
+
+
+/* --------------------------------------------------------------------------
+   10. Responsive
+   -------------------------------------------------------------------------- */
+@media (max-width: 560px) {
+  body {
+    align-items: start;
+    padding: 1rem 0.75rem;
+  }
+
+  body > div {
+    gap: 1.25rem 0.625rem;
+    padding: 1.75rem 1.25rem;
+  }
+
+  #new-password {
+    min-height: 3.5rem;
+    padding: 0.625rem 1rem;
+    font-size: 1.125rem;
+    letter-spacing: 0.02em;
+  }
+
+  #copy-btn {
+    width: 3.5rem;
+  }
+}
+
+@media (max-width: 360px) {
+  #new-password {
+    font-size: 1rem;
+  }
+}
+
+@media (pointer: coarse) {
+  #range {
+    --thumb: 24px;
+  }
+
+  input[type="checkbox"] + label {
+    padding-block: 0.75rem;
+  }
+}
+
+
+/* --------------------------------------------------------------------------
+   11. Accessibility
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+
+  #button:hover,
+  #button:active,
+  #copy-btn:hover,
+  #copy-btn:active {
+    transform: none;
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  body > div {
+    background: var(--surface);
+  }
+}
