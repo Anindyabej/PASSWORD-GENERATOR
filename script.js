@@ -64,7 +64,7 @@ copyBtn.addEventListener("click",()=>{
 
     setTimeout(() => {
         copyMessage.textContent=""
-    }, 3000);
+    }, 1500);
 })
 
 const rangeInput = document.getElementById('range');

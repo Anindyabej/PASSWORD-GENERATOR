@@ -122,7 +122,6 @@ body > div {
 }
 
 /* Everything except the password row spans the full width */
-#copy-message,
 #range,
 #slider,
 body > div > div,
@@ -206,13 +205,18 @@ body > div > div,
    Works with plain textContent: it fades in whenever it becomes non-empty.
    -------------------------------------------------------------------------- */
 #copy-message {
+  /* Sits in the same column as the copy button, directly underneath it */
+  grid-column: 2;
+  display: flex;
+  justify-content: flex-end; /* right edge lines up with the button; longer text grows leftward */
+  width: 3.75rem;
   height: 1.25rem;
   margin-top: -0.75rem;
   color: var(--accent-hover);
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.25rem;
-  text-align: center;
+  white-space: nowrap;
   pointer-events: none;
 }
 
@@ -236,8 +240,8 @@ body > div > div,
    7. Length slider (#range) and its value readout (#slider)
    -------------------------------------------------------------------------- */
 #range {
-  /* Default fill matches value 10 on a 6 to 20 range. JS updates it live. */
-  --fill: 28.57%;
+  /* Set live from script.js (see the snippet in the reply). Starts empty. */
+  --fill: 0%;
   --track-h: 4px;
   --thumb: 20px;
 
@@ -511,6 +515,10 @@ input[type="checkbox"]:checked + label {
   #copy-btn {
     width: 3.5rem;
   }
+
+  #copy-message {
+    width: 3.5rem;
+  }
 }
 
 @media (max-width: 360px) {
@@ -553,4 +561,4 @@ input[type="checkbox"]:checked + label {
   body > div {
     background: var(--surface);
   }
-}
+} 
